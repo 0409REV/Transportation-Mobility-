@@ -1,4 +1,4 @@
-# **Goodcabs Performance Analysis - Transportation & Mobility (Operations)**
+# **Goodcabs Performance Analysis - Transportation & Mobility**
 
 ## **Project Overview**
 Goodcabs, a cab service company operating in tier-2 cities across India, has seen rapid growth in the last two years. To achieve its ambitious performance targets for 2024, the company seeks to analyze key operational metrics such as:
