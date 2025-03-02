@@ -13,7 +13,7 @@ Due to resource constraints, the analytics manager, Tony Sharma, has entrusted t
 
 
 
-**Dashboard**
+## **Dashboard**
 ![Home -1](https://github.com/user-attachments/assets/9cf4f9af-15cd-4fcb-a335-0fd4f03be41f)
 
 ## **Objectives**
@@ -25,25 +25,27 @@ As a data analyst, your tasks include:
 5. **Develop an Engaging Presentation**: Summarize insights in a clear, actionable format.
 6. **Share Findings on LinkedIn**: Reflect on your experience and post with relevant links.
 
-**Dashboard**
+## **Dashboard**
 ![Home 2](https://github.com/user-attachments/assets/a706f010-cfc1-4893-b74a-e47f4ab3bf2a)
 
 ## **Tools Used**
 - **SQL** (PostgreSQL/MySQL for query-based reporting)
 - **Power BI** (Data visualization)
 - **Excel** (Basic analytics & reporting)
-**Dashboard**
-
-![home 3](https://github.com/user-attachments/assets/fcfa227d-e48b-48e8-acad-c5bf46028552)
-
-
+  
 ## **Project Workflow**
 1. **Data Exploration & Cleaning**
    - Load and inspect datasets
    - Handle missing values & outliers
    - Validate data integrity
 
-**Data Model**
+## **Dashboard**
+
+![home 3](https://github.com/user-attachments/assets/fcfa227d-e48b-48e8-acad-c5bf46028552)
+
+
+
+## **Data Model**
 
 ![Data Model](https://github.com/user-attachments/assets/d6c990ff-e45f-480b-b647-b17da49ab35b)
 
