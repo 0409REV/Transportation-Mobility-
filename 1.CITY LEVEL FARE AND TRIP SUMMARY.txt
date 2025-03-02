@@ -1,0 +1,25 @@
+/*1.CITY LEVEL FARE AND TRIP SUMMARY*/
+
+WITH city_level_aggregation AS (
+    SELECT
+        dc.city_name,
+        COUNT(DISTINCT ft.trip_id) AS total_trips,
+        SUM(ft.fare_amount) / NULLIF(SUM(ft.distance_travelled_km), 0) AS avg_fare_per_km,
+        SUM(ft.fare_amount) / COUNT(DISTINCT ft.trip_id) AS avg_fare_per_trip
+    FROM dim_city dc
+    JOIN fact_trips ft ON ft.city_id = dc.city_id
+    GROUP BY dc.city_name
+),
+total_trips AS (
+    SELECT COUNT(DISTINCT ft.trip_id) AS total_trips
+    FROM fact_trips ft
+)
+SELECT 
+    cla.city_name,
+    cla.total_trips,
+    CONCAT('INR ', ROUND(cla.avg_fare_per_km, 2)) AS avg_fare_per_km,
+    CONCAT('INR ', ROUND(cla.avg_fare_per_trip, 2)) AS avg_fare_per_trip,
+    CONCAT(ROUND((cla.total_trips / tt.total_trips) * 100, 2), '%') AS percent_contribution_to_total_trips
+FROM city_level_aggregation cla
+CROSS JOIN total_trips tt
+ORDER BY cla.total_trips DESC;

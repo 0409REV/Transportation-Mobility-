@@ -1,0 +1,49 @@
+-- Step 1: Calculate total repeat passengers for each city
+WITH city_total AS (
+    SELECT 
+        dc.city_name, 
+        SUM(drtd.repeat_passenger_count) AS total_repeat_passengers 
+    FROM dim_city dc 
+    JOIN dim_repeat_trip_distribution drtd 
+        ON dc.city_id = drtd.city_id
+    GROUP BY dc.city_name
+),
+
+-- Step 2: Calculate repeat passenger count for each trip category per city
+trip_counts AS (
+    SELECT 
+        dc.city_name, 
+        drtd.trip_count, 
+        SUM(drtd.repeat_passenger_count) AS repeat_passenger_count 
+    FROM dim_city dc 
+    JOIN dim_repeat_trip_distribution drtd 
+        ON dc.city_id = drtd.city_id
+    GROUP BY dc.city_name, drtd.trip_count
+),
+
+-- Step 3: Compute percentage contribution of each trip count category
+percent_table AS (
+    SELECT 
+        t.city_name, 
+        t.trip_count, 
+        ROUND((t.repeat_passenger_count * 100.0) / NULLIF(ct.total_repeat_passengers, 0), 2) AS percent_contribution
+    FROM trip_counts t
+    JOIN city_total ct 
+        ON t.city_name = ct.city_name
+)
+
+-- Step 4: Transform data into a more structured format
+SELECT 
+    city_name,
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '2-Trips' THEN percent_contribution END), 0), " %") AS "2_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '3-Trips' THEN percent_contribution END), 0), " %") AS "3_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '4-Trips' THEN percent_contribution END), 0), " %") AS "4_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '5-Trips' THEN percent_contribution END), 0), " %") AS "5_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '6-Trips' THEN percent_contribution END), 0), " %") AS "6_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '7-Trips' THEN percent_contribution END), 0), " %") AS "7_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '8-Trips' THEN percent_contribution END), 0), " %") AS "8_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '9-Trips' THEN percent_contribution END), 0), " %") AS "9_Trips_Percentage",
+    CONCAT(COALESCE(MAX(CASE WHEN trip_count = '10-Trips' THEN percent_contribution END), 0), " %") AS "10_Trips_Percentage"
+FROM percent_table
+GROUP BY city_name
+ORDER BY city_name;

@@ -1,0 +1,61 @@
+-- Step 1: Calculate actual trips per city per month
+WITH trip_count_table AS (
+    SELECT 
+        c.city_name, 
+        MONTHNAME(f.date) AS month_name,  -- Extracts month name from date
+        COUNT(f.trip_id) AS actual_trips  -- Counts the total trips per city per month
+    FROM trips_db.fact_trips f
+    JOIN trips_db.dim_city c ON f.city_id = c.city_id
+    GROUP BY c.city_name, month_name
+),
+
+-- Step 2: Retrieve target trips per city per month
+target_table AS (
+    SELECT 
+        c.city_name, 
+        MONTHNAME(mt.month) AS month_name,  -- Extracts month name from target month
+        mt.total_target_trips  -- Sum of target trips for that city & month
+    FROM targets_db.monthly_target_trips mt
+    JOIN trips_db.dim_city c ON mt.city_id = c.city_id
+),
+
+-- Step 3: Combine actual and target trips data
+combined_table AS (
+    SELECT 
+        tct.city_name, 
+        tct.month_name, 
+        tct.actual_trips, 
+        tt.total_target_trips 
+    FROM trip_count_table tct
+    JOIN target_table tt 
+        ON tct.city_name = tt.city_name 
+        AND tct.month_name = tt.month_name
+),
+
+-- Step 4: Calculate performance status and percentage difference
+final_table AS (
+    SELECT 
+        *, 
+        -- Determine performance status based on actual vs. target trips
+        CASE 
+            WHEN actual_trips > total_target_trips THEN "Above Target"
+            ELSE "Below Target"
+        END AS performance_status,
+        
+        -- Calculate percentage difference and handle cases where target_trips = 0
+        CASE 
+            WHEN total_target_trips = 0 THEN "N/A"  -- Avoid division by zero
+            ELSE CONCAT(ROUND(((actual_trips - total_target_trips) / NULLIF(total_target_trips, 0)) * 100, 2), " %")
+        END AS percent_difference
+    FROM combined_table
+)
+
+-- Step 5: Retrieve final results and sort by city and month
+SELECT * 
+FROM final_table
+ORDER BY 
+    city_name, 
+    -- Sort months in chronological order
+    FIELD(month_name, 
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December");

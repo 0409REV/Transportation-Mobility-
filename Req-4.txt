@@ -1,0 +1,26 @@
+with city_new_passengers as (
+select
+       dc.city_name,
+       sum(fps.new_passengers) as total_new_passengers
+       from dim_city dc
+       join fact_passenger_summary fps
+       on dc.city_id = fps.city_id
+       group by dc.city_name ),
+city_ranking as (
+select 
+city_name,
+total_new_passengers,
+dense_rank() over (order by total_new_passengers desc) as top_rank,
+dense_rank() over( order by total_new_passengers) as bottom_rank
+from city_new_passengers
+)
+select
+    city_name,
+    total_new_passengers,
+    case
+        when top_rank <= 3 then 'Top 3'
+        when bottom_rank <=3 then 'Bottom 3'
+        else 'Other'
+        end as city_category
+        from city_ranking
+        order by total_new_passengers desc;

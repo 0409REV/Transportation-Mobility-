@@ -1,0 +1,28 @@
+WITH m_rate AS (
+select 
+       c.city_name,
+       monthname(p.month) as month,
+       p.total_passengers,
+       p.repeat_passengers,
+       round((p.repeat_passengers*100)/p.total_passengers,2) as monthly_rate
+	from fact_passenger_summary p
+    join dim_city c on p.city_id=c.city_id
+    ),
+c_rate as (
+    select
+          c.city_name,
+          round((sum(p.repeat_passengers) *100)/sum(p.total_passengers ),2) as city_rate
+   FROM fact_passenger_summary p
+   join dim_city c on p.city_id = c.city_id
+   group by c.city_name
+   )
+   select
+   m.city_name,
+   m.month,
+   m.total_passengers,
+   m.repeat_passengers,
+   concat(m.monthly_rate, "%" ) as monthly_rate,
+   concat(c.city_rate,"%") as city_rate
+   from m_rate m
+   join c_rate c on m.city_name = c.city_name
+   order by m.city_name,m.month;

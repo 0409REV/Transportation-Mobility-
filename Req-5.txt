@@ -1,0 +1,40 @@
+WITH MonthlyRevenue AS (
+    -- Calculate total revenue for each city by month
+    SELECT 
+        dc.city_name, 
+        MONTHNAME(ft.date) AS month_name, 
+        SUM(ft.fare_amount) AS total_revenue
+    FROM dim_city dc 
+    JOIN fact_trips ft ON dc.city_id = ft.city_id
+    GROUP BY dc.city_name, month_name
+),
+
+RankedMonthlyRevenue AS (
+    -- Rank months by revenue for each city
+    SELECT 
+        city_name,
+        month_name,
+        total_revenue,
+        ROW_NUMBER() OVER (PARTITION BY city_name ORDER BY total_revenue DESC) AS month_ranking
+    FROM MonthlyRevenue
+),
+
+TotalCityRevenue AS (
+    -- Compute total revenue per city
+    SELECT 
+        city_name, 
+        SUM(total_revenue) AS city_total_revenue 
+    FROM MonthlyRevenue 
+    GROUP BY city_name
+)
+
+-- Final Query: Get the highest revenue month and percentage contribution
+SELECT 
+    tcr.city_name, 
+    rmr.month_name AS highest_revenue_month, 
+    CONCAT("INR ", FORMAT(rmr.total_revenue, 2)) AS revenue, 
+    CONCAT(ROUND((rmr.total_revenue / tcr.city_total_revenue) * 100, 2), " %") AS percent_contribution_to_city_total_revenue
+FROM TotalCityRevenue tcr 
+JOIN RankedMonthlyRevenue rmr ON tcr.city_name = rmr.city_name
+WHERE rmr.month_ranking = 1
+ORDER BY rmr.total_revenue DESC;
