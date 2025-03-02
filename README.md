@@ -69,8 +69,7 @@ As a data analyst, your tasks include:
 ✅ **Exploratory Data Analysis (EDA) Notebook**
 ✅ **SQL Queries for Business Questions**
 ✅ **Interactive Dashboard**
-✅ **Final Presentation (Slide Deck + Video)**
-✅ **LinkedIn Reflection Post**
+
 
 
 ## **Additional Resources**
