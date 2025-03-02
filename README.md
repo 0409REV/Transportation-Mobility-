@@ -29,7 +29,7 @@ As a data analyst, your tasks include:
 ![Home 2](https://github.com/user-attachments/assets/a706f010-cfc1-4893-b74a-e47f4ab3bf2a)
 
 ## **Tools Used**
-- **SQL** (PostgreSQL/MySQL for query-based reporting)
+- **SQL** (DataBase)
 - **Power BI** (Data visualization)
 - **Excel** (Basic analytics & reporting)
   
